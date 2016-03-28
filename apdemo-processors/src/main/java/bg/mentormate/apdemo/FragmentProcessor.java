@@ -59,9 +59,8 @@ public class FragmentProcessor extends AbstractProcessor {
     }
 
     private void scanElement(Element annotated) throws Exception {
-        // Example
         if (annotated.getKind() != ElementKind.CLASS) {
-            throw new Exception("@FragmentCreator can only be applied to a class");
+            throw new Exception("@Fragment can only be applied to a class");
         }
     }
 }
