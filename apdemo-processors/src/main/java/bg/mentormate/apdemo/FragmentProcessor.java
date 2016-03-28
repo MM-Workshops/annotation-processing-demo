@@ -27,7 +27,7 @@ public class FragmentProcessor extends AbstractProcessor {
 
     @Override public Set<String> getSupportedAnnotationTypes() {
         return ImmutableSet.of(
-                FragmentCreator.class.getCanonicalName());
+                Fragment.class.getCanonicalName());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class FragmentProcessor extends AbstractProcessor {
     }
 
     private boolean doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (Element annotated: roundEnv.getElementsAnnotatedWith(FragmentCreator.class) ) {
+        for (Element annotated: roundEnv.getElementsAnnotatedWith(Fragment.class) ) {
             try {
                 scanElement(annotated);
             } catch (Exception e) {
