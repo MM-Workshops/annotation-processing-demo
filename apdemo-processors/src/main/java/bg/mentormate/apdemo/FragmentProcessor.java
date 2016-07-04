@@ -20,6 +20,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
 import static com.squareup.javapoet.JavaFile.builder;
@@ -32,12 +34,14 @@ public class FragmentProcessor extends AbstractProcessor {
 
     private Messager messager;
     private Filer filer;
+    private Elements elementUtils;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         messager = processingEnv.getMessager();
         filer = processingEnv.getFiler();
+        elementUtils = processingEnv.getElementUtils();
     }
 
     @Override public Set<String> getSupportedAnnotationTypes() {
@@ -103,19 +107,32 @@ public class FragmentProcessor extends AbstractProcessor {
     }
 
     private AnnotatedClass buildAnnotatedClass(TypeElement annotatedClass) {
-        return new AnnotatedClass(annotatedClass);
+        ArrayList<String> views = new ArrayList<>();
+        for (Element enclosedElement : annotatedClass.getEnclosedElements()) {
+            if (!(enclosedElement instanceof VariableElement)) {
+                continue;
+            }
+            VariableElement variableElement = (VariableElement) enclosedElement;
+            boolean isAnnotated = variableElement.getAnnotation(Bind.class) != null;
+            if (!isAnnotated) {
+                continue;
+            }
+            views.add(variableElement.getSimpleName().toString());
+        }
+        return new AnnotatedClass(annotatedClass, views);
     }
 
     private void generate(ArrayList<AnnotatedClass> annotatedClasses) throws NoPackageNameException, IOException {
         if (annotatedClasses.size() == 0) {
             return;
         }
-        String packageName = Utils.getPackageName(processingEnv.getElementUtils(),
-                annotatedClasses.get(0).typeElement);
+        String packageName = Utils.getPackageName(elementUtils,
+                annotatedClasses.get(0).getTypeElement());
         for (AnnotatedClass annotatedClass : annotatedClasses) {
             TypeSpec generatedClass = CodeGenerator.generateClass(annotatedClass);
-            JavaFile javaFile = builder(packageName, generatedClass).build();
-            javaFile.writeTo(processingEnv.getFiler());
+            JavaFile javaFile = builder(packageName, generatedClass)
+                    .build();
+            javaFile.writeTo(filer);
         }
     }
 }

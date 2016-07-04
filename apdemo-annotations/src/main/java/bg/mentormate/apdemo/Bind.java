@@ -6,8 +6,10 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
+/**
+ * Created by tung.lam.nguyen on 04.07.2016
+ */
 @Retention(CLASS)
-@Target(ElementType.TYPE)
-public @interface Fragment {
-    int layoutId();
+@Target(ElementType.FIELD)
+public @interface Bind {
 }
