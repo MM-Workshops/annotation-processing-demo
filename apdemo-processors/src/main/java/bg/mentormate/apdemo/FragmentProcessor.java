@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -21,6 +24,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
@@ -107,7 +111,7 @@ public class FragmentProcessor extends AbstractProcessor {
     }
 
     private AnnotatedClass buildAnnotatedClass(TypeElement annotatedClass) {
-        ArrayList<String> views = new ArrayList<>();
+        List<VariableElement> views = new ArrayList<>();
         for (Element enclosedElement : annotatedClass.getEnclosedElements()) {
             if (!(enclosedElement instanceof VariableElement)) {
                 continue;
@@ -117,7 +121,7 @@ public class FragmentProcessor extends AbstractProcessor {
             if (!isAnnotated) {
                 continue;
             }
-            views.add(variableElement.getSimpleName().toString());
+            views.add(variableElement);
         }
         return new AnnotatedClass(annotatedClass, views);
     }

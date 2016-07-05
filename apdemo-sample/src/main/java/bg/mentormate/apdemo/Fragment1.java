@@ -11,8 +11,4 @@ public class Fragment1 {
 
     @Bind
     Button btnHello;
-    @Bind
-    View view;
-
-    String hello;
 }

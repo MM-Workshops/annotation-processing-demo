@@ -1,8 +1,10 @@
 package bg.mentormate.apdemo;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -11,9 +13,9 @@ import javax.lang.model.type.TypeMirror;
 public class AnnotatedClass {
     private final String name;
     private final TypeElement typeElement;
-    private final List<String> views;
+    private final List<VariableElement> views;
 
-    public AnnotatedClass(TypeElement typeElement, List<String> views) {
+    public AnnotatedClass(TypeElement typeElement, List<VariableElement> views) {
         this.name = typeElement.getSimpleName().toString();
         this.typeElement = typeElement;
         this.views = views;
@@ -31,7 +33,7 @@ public class AnnotatedClass {
         return typeElement.asType();
     }
 
-    public List<String> getViews() {
+    public List<VariableElement> getViews() {
         return views;
     }
 }

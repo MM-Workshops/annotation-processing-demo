@@ -6,6 +6,10 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
 import static com.squareup.javapoet.TypeSpec.classBuilder;
@@ -25,24 +29,25 @@ public class CodeGenerator {
     private static final ClassName LOG = ClassName.get("android.util", "Log");
 
     public static TypeSpec generateClass(AnnotatedClass annotatedClass) {
-        List<String> views = annotatedClass.getViews();
+        List<VariableElement> views = annotatedClass.getViews();
         TypeSpec.Builder builder =  classBuilder("Generated" + annotatedClass.getName())
                 .addModifiers(PUBLIC, FINAL)
                 .superclass(FRAGMENT)
                 .addMethod(buildOnCreateViewMethod())
                 .addMethod(buildInitViewsMethod(views));
-        for (String field : views) {
-            builder.addField(VIEW, field, PRIVATE);
+        for (VariableElement view : views) {
+            builder.addField(ClassName.get(view.asType()), view.getSimpleName().toString(), PRIVATE);
         }
         return builder.build();
     }
 
-    private static MethodSpec buildInitViewsMethod(List<String> views) {
+    private static MethodSpec buildInitViewsMethod(List<VariableElement> views) {
         final MethodSpec.Builder initViewsMethodBuilder = methodBuilder("initViews")
                 .addModifiers(PRIVATE);
-        for (String view : views) {
+        for (VariableElement view : views) {
+            String viewName = view.getSimpleName().toString();
             initViewsMethodBuilder.addStatement(
-                    view + " = getActivity().findViewById(R.id."+ getViewIdByName(view) +")");
+                    viewName + " = (" + view.asType() +") getActivity().findViewById(R.id."+ getViewIdByName(viewName) +")");
         }
         return initViewsMethodBuilder.build();
     }
