@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -24,7 +22,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
@@ -34,7 +31,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 @AutoService(Processor.class)
 public class FragmentProcessor extends AbstractProcessor {
 
-    private static final String ANNOTATION = "@" + Fragment.class.getSimpleName();
+    private static final String ANNOTATION = "@" + FragmentBuilder.class.getSimpleName();
 
     private Messager messager;
     private Filer filer;
@@ -50,7 +47,7 @@ public class FragmentProcessor extends AbstractProcessor {
 
     @Override public Set<String> getSupportedAnnotationTypes() {
         return ImmutableSet.of(
-                Fragment.class.getCanonicalName());
+                FragmentBuilder.class.getCanonicalName());
     }
 
     @Override
@@ -73,7 +70,7 @@ public class FragmentProcessor extends AbstractProcessor {
     private boolean doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         ArrayList<AnnotatedClass> annotatedClasses = new ArrayList<>();
         // Gathering annotated classes
-        for (Element annotated: roundEnv.getElementsAnnotatedWith(Fragment.class) ) {
+        for (Element annotated: roundEnv.getElementsAnnotatedWith(FragmentBuilder.class) ) {
             TypeElement annotatedClass = (TypeElement) annotated;
             if (!isValidClass(annotatedClass)) {
                 messager.printMessage(Diagnostic.Kind.NOTE, annotatedClass.getSimpleName() + " class is not valid");

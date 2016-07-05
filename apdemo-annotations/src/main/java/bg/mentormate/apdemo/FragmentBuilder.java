@@ -8,6 +8,6 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 
 @Retention(CLASS)
 @Target(ElementType.TYPE)
-public @interface Fragment {
-    int layoutId();
+public @interface FragmentBuilder {
+    int value();
 }

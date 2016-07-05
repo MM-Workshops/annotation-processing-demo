@@ -1,7 +1,6 @@
 package bg.mentormate.apdemo;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -14,10 +13,12 @@ public class AnnotatedClass {
     private final String name;
     private final TypeElement typeElement;
     private final List<VariableElement> views;
+    private final int layoutId;
 
     public AnnotatedClass(TypeElement typeElement, List<VariableElement> views) {
         this.name = typeElement.getSimpleName().toString();
         this.typeElement = typeElement;
+        this.layoutId = typeElement.getAnnotation(FragmentBuilder.class).value();
         this.views = views;
     }
 
@@ -31,6 +32,10 @@ public class AnnotatedClass {
 
     public TypeMirror getType() {
         return typeElement.asType();
+    }
+
+    public int getLayoutId() {
+        return layoutId;
     }
 
     public List<VariableElement> getViews() {
