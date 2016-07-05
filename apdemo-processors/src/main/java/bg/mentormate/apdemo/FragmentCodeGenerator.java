@@ -81,8 +81,8 @@ public class FragmentCodeGenerator {
         for (VariableElement view : annotatedClass.getViews()) {
             String viewName = view.getSimpleName().toString();
             initViewsMethodBuilder
-                    .addStatement("$L = ($L) getActivity().findViewById($T.id.$L)",
-                            viewName, view.asType(), ClassName.get(bg.mentormate.apdemo.utils.Utils.getMainPackageName(annotatedClass), "R"), bg.mentormate.apdemo.utils.Utils.getViewIdByName(viewName))
+                    .addStatement("$L = ($L) getActivity().findViewById($L)",
+                            viewName, view.asType(), view.getAnnotation(Bind.class).value())
                     .addStatement("$L.$L = this.$L", BUILDER_VARIABLE, viewName, viewName);
         }
         return initViewsMethodBuilder
@@ -94,12 +94,11 @@ public class FragmentCodeGenerator {
         final MethodSpec.Builder builder = methodBuilder(INIT_LISTENERS_METHOD)
                 .addModifiers(PRIVATE);
         for (ExecutableElement method: annotatedClass.getMethods()) {
-            final String methodSimpleName = method.getSimpleName().toString();
-            final String viewField = methodSimpleName.substring(0, methodSimpleName.indexOf("Clicked"));
-            builder.beginControlFlow("$L.setOnClickListener(new View.OnClickListener()", viewField)
+            final int value = method.getAnnotation(Click.class).value();
+            builder.beginControlFlow("getActivity().findViewById($L).setOnClickListener(new View.OnClickListener()", value)
                     .addCode("@Override\n")
                     .beginControlFlow("public void onClick(View v)")
-                    .addStatement("$L.$L()", BUILDER_VARIABLE, methodSimpleName)
+                    .addStatement("$L.$L()", BUILDER_VARIABLE, method.getSimpleName())
                     .endControlFlow()
                     .endControlFlow()
                     .addStatement(")");

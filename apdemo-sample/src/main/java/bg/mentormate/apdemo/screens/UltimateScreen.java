@@ -18,9 +18,9 @@ import bg.mentormate.fragmentcreator.FragmentBuilder;
 public class UltimateScreen implements FragmentBuilder {
     public static final String TAG = "UltimateScreen";
 
-    @Bind
+    @Bind(R.id.btn_hello)
     Button btnHello;
-    @Bind
+    @Bind(R.id.edit_cool)
     EditText editCool;
 
     private Context context;
@@ -30,7 +30,7 @@ public class UltimateScreen implements FragmentBuilder {
         this.context = context;
     }
 
-    @Click
+    @Click(R.id.btn_hello)
     void btnHelloClicked() {
         btnHello.setTextColor(ContextCompat.getColor(context, android.R.color.holo_green_light));
         editCool.setText("Hello world");

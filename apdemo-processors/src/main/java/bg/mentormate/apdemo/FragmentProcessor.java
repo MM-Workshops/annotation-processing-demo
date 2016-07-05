@@ -26,6 +26,8 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 
+import bg.mentormate.apdemo.utils.Utils;
+
 import static com.squareup.javapoet.JavaFile.builder;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
@@ -143,7 +145,7 @@ public class FragmentProcessor extends AbstractProcessor {
         if (annotatedClasses.size() == 0) {
             return;
         }
-        String packageName = bg.mentormate.apdemo.utils.Utils.getPackageName(elementUtils,
+        String packageName = Utils.getPackageName(elementUtils,
                 annotatedClasses.get(0).getTypeElement());
         for (FragmentAnnotatedClass annotatedClass : annotatedClasses) {
             TypeSpec generatedClass = FragmentCodeGenerator.generateClass(annotatedClass);

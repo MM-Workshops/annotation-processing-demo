@@ -12,4 +12,5 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 @Target(ElementType.FIELD)
 public @interface Bind {
+    int value();
 }

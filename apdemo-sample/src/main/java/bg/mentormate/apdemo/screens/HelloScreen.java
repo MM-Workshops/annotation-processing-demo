@@ -15,7 +15,7 @@ public class HelloScreen implements bg.mentormate.fragmentcreator.FragmentBuilde
 
     public static final String TAG = "HelloScreen";
 
-    @Bind
+    @Bind(R.id.txt_welcome)
     TextView txtWelcome;
 
     @Override

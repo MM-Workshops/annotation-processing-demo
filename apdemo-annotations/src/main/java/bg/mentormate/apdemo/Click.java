@@ -12,4 +12,5 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Retention(CLASS)
 @Target(ElementType.METHOD)
 public @interface Click {
+    int value();
 }
