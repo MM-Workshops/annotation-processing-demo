@@ -1,7 +1,9 @@
 package bg.mentormate.apdemo;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import bg.mentormate.fragmentcreator.FragmentCreator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.grp_container, new GeneratedUltimateScreenFragment(), "Blablabla")
+                .add(R.id.grp_container, FragmentCreator.getFragment(UltimateScreen.class), UltimateScreen.TAG)
                 .commit();
     }
 }

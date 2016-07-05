@@ -1,6 +1,9 @@
 package bg.mentormate.apdemo;
 
+import java.util.List;
+
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 import static javax.lang.model.element.Modifier.ABSTRACT;
 import static javax.lang.model.element.Modifier.PUBLIC;
@@ -15,5 +18,15 @@ public final class ClassValidator {
 
     static boolean isAbstract(TypeElement annotatedClass) {
         return annotatedClass.getModifiers().contains(ABSTRACT);
+    }
+
+    public static boolean implementUltimateFragment(TypeElement annotatedClass) {
+        final List<? extends TypeMirror> interfaces = annotatedClass.getInterfaces();
+        for (TypeMirror anInterface : interfaces) {
+            if (anInterface.toString().contains("UltimateFragment")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

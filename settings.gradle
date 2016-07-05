@@ -1,1 +1,1 @@
-include ':apdemo-sample', ':apdemo-annotations', ':apdemo-processors'
+include ':apdemo-sample', ':apdemo-annotations', ':apdemo-processors', ':fragmentcreator'

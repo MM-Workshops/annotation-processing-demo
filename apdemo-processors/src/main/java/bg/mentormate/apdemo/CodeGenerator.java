@@ -78,7 +78,8 @@ public class CodeGenerator {
     private static MethodSpec buildInitViewsMethod(AnnotatedClass annotatedClass) {
         final MethodSpec.Builder initViewsMethodBuilder = methodBuilder(INIT_VIEWS_METHOD)
                 .addModifiers(PRIVATE)
-                .addStatement("$L = new $L()", BUILDER_VARIABLE, annotatedClass.getName());
+                .addStatement("$L = new $L()", BUILDER_VARIABLE, annotatedClass.getName())
+                .addStatement("$L.init(getContext())", BUILDER_VARIABLE);
         for (VariableElement view : annotatedClass.getViews()) {
             String viewName = view.getSimpleName().toString();
             initViewsMethodBuilder
@@ -101,7 +102,7 @@ public class CodeGenerator {
             builder.beginControlFlow("$L.setOnClickListener(new View.OnClickListener()", viewField)
                     .addCode("@Override\n")
                     .beginControlFlow("public void onClick(View v)")
-                    .addStatement("$L.$L(v)", BUILDER_VARIABLE, methodSimpleName)
+                    .addStatement("$L.$L()", BUILDER_VARIABLE, methodSimpleName)
                     .endControlFlow()
                     .endControlFlow()
                     .addStatement(")");

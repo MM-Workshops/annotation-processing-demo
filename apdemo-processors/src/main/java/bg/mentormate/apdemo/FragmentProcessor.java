@@ -46,7 +46,8 @@ public class FragmentProcessor extends AbstractProcessor {
         elementUtils = processingEnv.getElementUtils();
     }
 
-    @Override public Set<String> getSupportedAnnotationTypes() {
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
         return ImmutableSet.of(
                 FragmentBuilder.class.getCanonicalName());
     }
@@ -68,10 +69,11 @@ public class FragmentProcessor extends AbstractProcessor {
         }
     }
 
-    private boolean doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    private boolean doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
+            throws NoPackageNameException, IOException {
         ArrayList<AnnotatedClass> annotatedClasses = new ArrayList<>();
         // Gathering annotated classes
-        for (Element annotated: roundEnv.getElementsAnnotatedWith(FragmentBuilder.class) ) {
+        for (Element annotated : roundEnv.getElementsAnnotatedWith(FragmentBuilder.class)) {
             TypeElement annotatedClass = (TypeElement) annotated;
             if (!isValidClass(annotatedClass)) {
                 messager.printMessage(Diagnostic.Kind.NOTE, annotatedClass.getSimpleName() + " class is not valid");
@@ -84,11 +86,7 @@ public class FragmentProcessor extends AbstractProcessor {
             }
         }
         // Generating files
-        try {
-            generate(annotatedClasses);
-        } catch (NoPackageNameException | IOException e) {
-            messager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
-        }
+        generate(annotatedClasses);
         return false;
     }
 
@@ -101,6 +99,12 @@ public class FragmentProcessor extends AbstractProcessor {
         }
         if (ClassValidator.isAbstract(annotatedClass)) {
             String message = String.format("Classes annotated with %s must not be abstract.",
+                    ANNOTATION);
+            messager.printMessage(ERROR, message, annotatedClass);
+            return false;
+        }
+        if (!ClassValidator.implementUltimateFragment(annotatedClass)) {
+            String message = String.format("Classes annotated with %s must implement UltimateFragment interface.",
                     ANNOTATION);
             messager.printMessage(ERROR, message, annotatedClass);
             return false;
