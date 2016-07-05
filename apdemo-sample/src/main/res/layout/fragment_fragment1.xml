@@ -9,4 +9,9 @@
         android:id="@+id/btn_hello"
         android:text="Hello"/>
 
+    <EditText
+        android:id="@+id/edit_cool"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

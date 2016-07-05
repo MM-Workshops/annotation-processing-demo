@@ -20,6 +20,7 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
@@ -109,18 +110,29 @@ public class FragmentProcessor extends AbstractProcessor {
 
     private AnnotatedClass buildAnnotatedClass(TypeElement annotatedClass) {
         List<VariableElement> views = new ArrayList<>();
+        List<ExecutableElement> methods = new ArrayList<>();
         for (Element enclosedElement : annotatedClass.getEnclosedElements()) {
-            if (!(enclosedElement instanceof VariableElement)) {
+            if (!(enclosedElement instanceof VariableElement
+                    || enclosedElement instanceof ExecutableElement)) {
                 continue;
             }
-            VariableElement variableElement = (VariableElement) enclosedElement;
-            boolean isAnnotated = variableElement.getAnnotation(Bind.class) != null;
-            if (!isAnnotated) {
-                continue;
+            if (enclosedElement instanceof VariableElement) {
+                VariableElement variableElement = (VariableElement) enclosedElement;
+                boolean isAnnotated = variableElement.getAnnotation(Bind.class) != null;
+                if (!isAnnotated) {
+                    continue;
+                }
+                views.add(variableElement);
+            } else {
+                ExecutableElement executableElement = (ExecutableElement) enclosedElement;
+                boolean isAnnotated = executableElement.getAnnotation(Click.class) != null;
+                if (!isAnnotated) {
+                    continue;
+                }
+                methods.add(executableElement);
             }
-            views.add(variableElement);
         }
-        return new AnnotatedClass(annotatedClass, views);
+        return new AnnotatedClass(annotatedClass, views, methods);
     }
 
     private void generate(ArrayList<AnnotatedClass> annotatedClasses) throws NoPackageNameException, IOException {

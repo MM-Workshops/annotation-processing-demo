@@ -7,6 +7,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.util.List;
 
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import static com.squareup.javapoet.MethodSpec.methodBuilder;
@@ -41,7 +42,7 @@ public class CodeGenerator {
                 .addMethod(buildOnCreateViewMethod(annotatedClass.getLayoutId()))
                 .addMethod(buildOnViewCreatedMethod())
                 .addMethod(buildInitViewsMethod(annotatedClass))
-                .addMethod(buildInitListenersMethod())
+                .addMethod(buildInitListenersMethod(annotatedClass))
                 .addField(ClassName.get(annotatedClass.getType()), BUILDER_VARIABLE, PRIVATE);
         for (VariableElement view : views) {
             builder.addField(ClassName.get(view.asType()), view.getSimpleName().toString(), PRIVATE);
@@ -91,10 +92,20 @@ public class CodeGenerator {
         return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, viewName);
     }
 
-    private static MethodSpec buildInitListenersMethod() {
-        return methodBuilder(INIT_LISTENERS_METHOD)
-                .addModifiers(PRIVATE)
-                .addStatement("$L.$L()", BUILDER_VARIABLE, INIT_LISTENERS_METHOD)
-                .build();
+    private static MethodSpec buildInitListenersMethod(AnnotatedClass annotatedClass) {
+        final MethodSpec.Builder builder = methodBuilder(INIT_LISTENERS_METHOD)
+                .addModifiers(PRIVATE);
+        for (ExecutableElement method: annotatedClass.getMethods()) {
+            final String methodSimpleName = method.getSimpleName().toString();
+            final String viewField = methodSimpleName.substring(0, methodSimpleName.indexOf("Clicked"));
+            builder.beginControlFlow("$L.setOnClickListener(new View.OnClickListener()", viewField)
+                    .addCode("@Override\n")
+                    .beginControlFlow("public void onClick(View v)")
+                    .addStatement("$L.$L(v)", BUILDER_VARIABLE, methodSimpleName)
+                    .endControlFlow()
+                    .endControlFlow()
+                    .addStatement(")");
+        }
+        return builder.build();
     }
 }

@@ -1,8 +1,9 @@
 package bg.mentormate.apdemo;
 
-import android.util.Log;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 /**
  * Created by tung.lam.nguyen on 04.07.2016
@@ -14,14 +15,13 @@ public class UltimateScreen implements UltimateFragment {
 
     @Bind
     Button btnHello;
+    @Bind
+    EditText editCool;
 
-    @Override
-    public void initListeners() {
-        btnHello.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "on button hello clicked");
-            }
-        });
+    @Click
+    void btnHelloClicked(View view) {
+        final int color = ContextCompat.getColor(view.getContext(), android.R.color.holo_green_light);
+        view.setBackgroundColor(color);
+        editCool.setText("Hello world");
     }
 }
