@@ -11,7 +11,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 /**
  * Created by tung.lam.nguyen on 04.07.2016
  */
-public final class FragmentBuilderValidator {
+public final class FragmentScreenValidator {
     static boolean isPublic(TypeElement annotatedClass) {
         return annotatedClass.getModifiers().contains(PUBLIC);
     }
@@ -20,10 +20,10 @@ public final class FragmentBuilderValidator {
         return annotatedClass.getModifiers().contains(ABSTRACT);
     }
 
-    public static boolean implementFragmentBuilder(TypeElement annotatedClass) {
+    public static boolean implementFragmentScreen(TypeElement annotatedClass) {
         final List<? extends TypeMirror> interfaces = annotatedClass.getInterfaces();
         for (TypeMirror anInterface : interfaces) {
-            if (anInterface.toString().contains("FragmentBuilder")) {
+            if (anInterface.toString().contains("FragmentScreen")) {
                 return true;
             }
         }

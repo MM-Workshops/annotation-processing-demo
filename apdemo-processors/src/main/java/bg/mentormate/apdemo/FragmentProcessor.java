@@ -93,19 +93,19 @@ public class FragmentProcessor extends AbstractProcessor {
     }
 
     private boolean isValidClass(TypeElement annotatedClass) {
-        if (!FragmentBuilderValidator.isPublic(annotatedClass)) {
+        if (!FragmentScreenValidator.isPublic(annotatedClass)) {
             String message = String.format("Classes annotated with %s must be public.",
                     ANNOTATION);
             messager.printMessage(ERROR, message, annotatedClass);
             return false;
         }
-        if (FragmentBuilderValidator.isAbstract(annotatedClass)) {
+        if (FragmentScreenValidator.isAbstract(annotatedClass)) {
             String message = String.format("Classes annotated with %s must not be abstract.",
                     ANNOTATION);
             messager.printMessage(ERROR, message, annotatedClass);
             return false;
         }
-        if (!FragmentBuilderValidator.implementFragmentBuilder(annotatedClass)) {
+        if (!FragmentScreenValidator.implementFragmentScreen(annotatedClass)) {
             String message = String.format("Classes annotated with %s must implement UltimateFragment interface.",
                     ANNOTATION);
             messager.printMessage(ERROR, message, annotatedClass);
@@ -116,7 +116,8 @@ public class FragmentProcessor extends AbstractProcessor {
 
     private FragmentAnnotatedClass buildAnnotatedClass(TypeElement annotatedClass) {
         List<VariableElement> views = new ArrayList<>();
-        List<ExecutableElement> methods = new ArrayList<>();
+        List<ExecutableElement> clickMethods = new ArrayList<>();
+        List<ExecutableElement> lifeCycleMethods = new ArrayList<>();
         for (Element enclosedElement : annotatedClass.getEnclosedElements()) {
             if (!(enclosedElement instanceof VariableElement
                     || enclosedElement instanceof ExecutableElement)) {
@@ -124,21 +125,22 @@ public class FragmentProcessor extends AbstractProcessor {
             }
             if (enclosedElement instanceof VariableElement) {
                 VariableElement variableElement = (VariableElement) enclosedElement;
-                boolean isAnnotated = variableElement.getAnnotation(Bind.class) != null;
-                if (!isAnnotated) {
-                    continue;
+                boolean isBindAnnotated = variableElement.getAnnotation(Bind.class) != null;
+                if (isBindAnnotated) {
+                    views.add(variableElement);
                 }
-                views.add(variableElement);
             } else {
                 ExecutableElement executableElement = (ExecutableElement) enclosedElement;
-                boolean isAnnotated = executableElement.getAnnotation(Click.class) != null;
-                if (!isAnnotated) {
-                    continue;
+                boolean isClickAnnotated = executableElement.getAnnotation(Click.class) != null;
+                boolean isLifeCycleAnnotated = executableElement.getAnnotation(LifeCycle.class) != null;
+                if (isClickAnnotated) {
+                    clickMethods.add(executableElement);
+                } else if (isLifeCycleAnnotated){
+                    lifeCycleMethods.add(executableElement);
                 }
-                methods.add(executableElement);
             }
         }
-        return new FragmentAnnotatedClass(annotatedClass, views, methods);
+        return new FragmentAnnotatedClass(annotatedClass, views, clickMethods, lifeCycleMethods);
     }
 
     private void generate(ArrayList<FragmentAnnotatedClass> annotatedClasses) throws bg.mentormate.apdemo.utils.NoPackageNameException, IOException {

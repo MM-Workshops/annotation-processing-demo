@@ -28,8 +28,10 @@ public class FragmentCodeGenerator {
 
     private static final String BUILDER_VARIABLE = "builder";
 
+    private static final String ON_CREATE_METHOD = "onCreate";
     private static final String ON_CREATE_VIEW_METHOD = "onCreateView";
     private static final String ON_VIEW_CREATED_METHOD = "onViewCreated";
+    private static final String ON_RESUME_METHOD = "onResume";
     private static final String INIT_VIEWS_METHOD = "initViews";
     private static final String INIT_LISTENERS_METHOD = "initListeners";
 
@@ -38,8 +40,10 @@ public class FragmentCodeGenerator {
         TypeSpec.Builder builder = classBuilder("Generated" + annotatedClass.getName() + "Fragment")
                 .addModifiers(PUBLIC, FINAL)
                 .superclass(FRAGMENT_CLASS)
+                .addMethod(buildOnCreateMethod(annotatedClass))
                 .addMethod(buildOnCreateViewMethod(annotatedClass.getLayoutId()))
                 .addMethod(buildOnViewCreatedMethod())
+                .addMethod(buildOnResumeMethod(annotatedClass))
                 .addMethod(buildInitViewsMethod(annotatedClass))
                 .addMethod(buildInitListenersMethod(annotatedClass))
                 .addField(ClassName.get(annotatedClass.getType()), BUILDER_VARIABLE, PRIVATE);
@@ -47,6 +51,46 @@ public class FragmentCodeGenerator {
             builder.addField(ClassName.get(view.asType()), view.getSimpleName().toString(), PRIVATE);
         }
         return builder.build();
+    }
+
+    private static MethodSpec buildOnResumeMethod(FragmentAnnotatedClass annotatedClass) {
+        MethodSpec.Builder onCreateSpec = methodBuilder(ON_RESUME_METHOD)
+                .addModifiers(PUBLIC)
+                .addAnnotation(Override.class)
+                .addStatement("super.onResume()");
+        if (!annotatedClass.getLifeCycleMethods().isEmpty()) {
+            ExecutableElement onCreateMethod = getLifeCycleMethodByState(annotatedClass, State.ON_RESUME);
+            if (onCreateMethod != null) {
+                onCreateSpec.addStatement("$L.$L()", BUILDER_VARIABLE, onCreateMethod.getSimpleName());
+            }
+        }
+        return onCreateSpec.build();
+    }
+
+    private static MethodSpec buildOnCreateMethod(FragmentAnnotatedClass annotatedClass) {
+        MethodSpec.Builder onCreateSpec = methodBuilder(ON_CREATE_METHOD)
+                .addModifiers(PUBLIC)
+                .addAnnotation(Override.class)
+                .addParameter(BUNDLE_CLASS, "savedInstanceState")
+                .addStatement("super.onCreate(savedInstanceState)")
+                .addStatement("$L = new $L()", BUILDER_VARIABLE, annotatedClass.getName());
+        if (!annotatedClass.getLifeCycleMethods().isEmpty()) {
+            ExecutableElement onCreateMethod = getLifeCycleMethodByState(annotatedClass, State.ON_CREATE);
+            if (onCreateMethod != null) {
+                onCreateSpec.addStatement("$L.$L()", BUILDER_VARIABLE, onCreateMethod.getSimpleName());
+            }
+        }
+        return onCreateSpec.build();
+    }
+
+    private static ExecutableElement getLifeCycleMethodByState(FragmentAnnotatedClass annotatedClass, State state) {
+        for (ExecutableElement executableElement : annotatedClass.getLifeCycleMethods()) {
+            State value = executableElement.getAnnotation(LifeCycle.class).value();
+            if (value.equals(state)) {
+                return executableElement;
+            }
+        }
+        return null;
     }
 
     private static MethodSpec buildOnCreateViewMethod(int layoutId) {
@@ -76,8 +120,7 @@ public class FragmentCodeGenerator {
 
     private static MethodSpec buildInitViewsMethod(FragmentAnnotatedClass annotatedClass) {
         final MethodSpec.Builder initViewsMethodBuilder = methodBuilder(INIT_VIEWS_METHOD)
-                .addModifiers(PRIVATE)
-                .addStatement("$L = new $L()", BUILDER_VARIABLE, annotatedClass.getName());
+                .addModifiers(PRIVATE);
         for (VariableElement view : annotatedClass.getViews()) {
             String viewName = view.getSimpleName().toString();
             initViewsMethodBuilder
@@ -93,7 +136,7 @@ public class FragmentCodeGenerator {
     private static MethodSpec buildInitListenersMethod(FragmentAnnotatedClass annotatedClass) {
         final MethodSpec.Builder builder = methodBuilder(INIT_LISTENERS_METHOD)
                 .addModifiers(PRIVATE);
-        for (ExecutableElement method: annotatedClass.getMethods()) {
+        for (ExecutableElement method: annotatedClass.getClickMethods()) {
             final int value = method.getAnnotation(Click.class).value();
             builder.beginControlFlow("getActivity().findViewById($L).setOnClickListener(new View.OnClickListener()", value)
                     .addCode("@Override\n")

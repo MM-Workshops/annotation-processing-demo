@@ -9,13 +9,13 @@ import bg.mentormate.apdemo.Bind;
 import bg.mentormate.apdemo.Click;
 import bg.mentormate.apdemo.R;
 import bg.mentormate.apdemo.Screen;
-import bg.mentormate.fragmentcreator.FragmentBuilder;
+import bg.mentormate.fragmentcreator.FragmentScreen;
 
 /**
  * Created by tung.lam.nguyen on 04.07.2016
  */
 @Screen(R.layout.fragment_ultimate)
-public class UltimateScreen implements FragmentBuilder {
+public class UltimateScreen implements FragmentScreen {
     public static final String TAG = "UltimateScreen";
 
     @Bind(R.id.btn_hello)

@@ -5,6 +5,6 @@ import android.content.Context;
 /**
  * Created by TL on 7/4/2016.
  */
-public interface FragmentBuilder {
+public interface FragmentScreen {
     void init(Context context);
 }

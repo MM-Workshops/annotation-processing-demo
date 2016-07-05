@@ -13,7 +13,7 @@ public class FragmentCreator {
     private static final String TAG = "FragmentCreator";
     private static final Map<String, Fragment> BINDERS = new HashMap<>();
 
-    public static Fragment create(Class<? extends FragmentBuilder> builderClass) {
+    public static Fragment create(Class<? extends FragmentScreen> builderClass) {
         final String builderName = builderClass.getSimpleName();
         if (BINDERS.containsKey(builderName)) {
             return BINDERS.get(builderName);

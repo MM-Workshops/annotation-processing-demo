@@ -14,15 +14,20 @@ public class FragmentAnnotatedClass {
     private final String name;
     private final TypeElement typeElement;
     private final List<VariableElement> views;
-    private final List<ExecutableElement> methods;
+    private final List<ExecutableElement> clickMethods;
+    private final List<ExecutableElement> lifeCycleMethods;
     private final int layoutId;
 
-    public FragmentAnnotatedClass(TypeElement typeElement, List<VariableElement> views, List<ExecutableElement> methods) {
+    public FragmentAnnotatedClass(TypeElement typeElement,
+                                  List<VariableElement> views,
+                                  List<ExecutableElement> clickMethods,
+                                  List<ExecutableElement> lifeCycleMethods) {
         this.name = typeElement.getSimpleName().toString();
         this.typeElement = typeElement;
         this.layoutId = typeElement.getAnnotation(Screen.class).value();
         this.views = views;
-        this.methods = methods;
+        this.clickMethods = clickMethods;
+        this.lifeCycleMethods = lifeCycleMethods;
     }
 
     public TypeElement getTypeElement() {
@@ -45,7 +50,11 @@ public class FragmentAnnotatedClass {
         return views;
     }
 
-    public List<ExecutableElement> getMethods() {
-        return methods;
+    public List<ExecutableElement> getClickMethods() {
+        return clickMethods;
+    }
+
+    public List<ExecutableElement> getLifeCycleMethods() {
+        return lifeCycleMethods;
     }
 }

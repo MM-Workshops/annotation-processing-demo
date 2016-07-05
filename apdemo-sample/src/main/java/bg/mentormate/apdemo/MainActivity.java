@@ -3,6 +3,7 @@ package bg.mentormate.apdemo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import bg.mentormate.apdemo.screens.HelloScreen;
 import bg.mentormate.apdemo.screens.UltimateScreen;
 import bg.mentormate.fragmentcreator.FragmentCreator;
 
@@ -15,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.grp_container,
-                        FragmentCreator.create(UltimateScreen.class),
-                        UltimateScreen.TAG)
+                        FragmentCreator.create(HelloScreen.class),
+                        HelloScreen.TAG)
                 .commit();
     }
 }
