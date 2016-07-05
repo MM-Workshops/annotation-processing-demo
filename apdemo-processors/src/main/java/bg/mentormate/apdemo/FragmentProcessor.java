@@ -32,7 +32,7 @@ import static javax.tools.Diagnostic.Kind.ERROR;
 @AutoService(Processor.class)
 public class FragmentProcessor extends AbstractProcessor {
 
-    private static final String ANNOTATION = "@" + FragmentBuilder.class.getSimpleName();
+    private static final String ANNOTATION = "@" + Screen.class.getSimpleName();
 
     private Messager messager;
     private Filer filer;
@@ -49,7 +49,7 @@ public class FragmentProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         return ImmutableSet.of(
-                FragmentBuilder.class.getCanonicalName());
+                Screen.class.getCanonicalName());
     }
 
     @Override
@@ -70,10 +70,10 @@ public class FragmentProcessor extends AbstractProcessor {
     }
 
     private boolean doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv)
-            throws NoPackageNameException, IOException {
-        ArrayList<AnnotatedClass> annotatedClasses = new ArrayList<>();
+            throws bg.mentormate.apdemo.utils.NoPackageNameException, IOException {
+        ArrayList<FragmentAnnotatedClass> annotatedClasses = new ArrayList<>();
         // Gathering annotated classes
-        for (Element annotated : roundEnv.getElementsAnnotatedWith(FragmentBuilder.class)) {
+        for (Element annotated : roundEnv.getElementsAnnotatedWith(Screen.class)) {
             TypeElement annotatedClass = (TypeElement) annotated;
             if (!isValidClass(annotatedClass)) {
                 messager.printMessage(Diagnostic.Kind.NOTE, annotatedClass.getSimpleName() + " class is not valid");
@@ -91,19 +91,19 @@ public class FragmentProcessor extends AbstractProcessor {
     }
 
     private boolean isValidClass(TypeElement annotatedClass) {
-        if (!ClassValidator.isPublic(annotatedClass)) {
+        if (!FragmentBuilderValidator.isPublic(annotatedClass)) {
             String message = String.format("Classes annotated with %s must be public.",
                     ANNOTATION);
             messager.printMessage(ERROR, message, annotatedClass);
             return false;
         }
-        if (ClassValidator.isAbstract(annotatedClass)) {
+        if (FragmentBuilderValidator.isAbstract(annotatedClass)) {
             String message = String.format("Classes annotated with %s must not be abstract.",
                     ANNOTATION);
             messager.printMessage(ERROR, message, annotatedClass);
             return false;
         }
-        if (!ClassValidator.implementUltimateFragment(annotatedClass)) {
+        if (!FragmentBuilderValidator.implementFragmentBuilder(annotatedClass)) {
             String message = String.format("Classes annotated with %s must implement UltimateFragment interface.",
                     ANNOTATION);
             messager.printMessage(ERROR, message, annotatedClass);
@@ -112,7 +112,7 @@ public class FragmentProcessor extends AbstractProcessor {
         return true;
     }
 
-    private AnnotatedClass buildAnnotatedClass(TypeElement annotatedClass) {
+    private FragmentAnnotatedClass buildAnnotatedClass(TypeElement annotatedClass) {
         List<VariableElement> views = new ArrayList<>();
         List<ExecutableElement> methods = new ArrayList<>();
         for (Element enclosedElement : annotatedClass.getEnclosedElements()) {
@@ -136,17 +136,17 @@ public class FragmentProcessor extends AbstractProcessor {
                 methods.add(executableElement);
             }
         }
-        return new AnnotatedClass(annotatedClass, views, methods);
+        return new FragmentAnnotatedClass(annotatedClass, views, methods);
     }
 
-    private void generate(ArrayList<AnnotatedClass> annotatedClasses) throws NoPackageNameException, IOException {
+    private void generate(ArrayList<FragmentAnnotatedClass> annotatedClasses) throws bg.mentormate.apdemo.utils.NoPackageNameException, IOException {
         if (annotatedClasses.size() == 0) {
             return;
         }
-        String packageName = Utils.getPackageName(elementUtils,
+        String packageName = bg.mentormate.apdemo.utils.Utils.getPackageName(elementUtils,
                 annotatedClasses.get(0).getTypeElement());
-        for (AnnotatedClass annotatedClass : annotatedClasses) {
-            TypeSpec generatedClass = CodeGenerator.generateClass(annotatedClass);
+        for (FragmentAnnotatedClass annotatedClass : annotatedClasses) {
+            TypeSpec generatedClass = FragmentCodeGenerator.generateClass(annotatedClass);
             JavaFile javaFile = builder(packageName, generatedClass)
                     .build();
             javaFile.writeTo(filer);

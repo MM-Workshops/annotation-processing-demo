@@ -13,12 +13,12 @@ public class FragmentCreator {
     private static final String TAG = "FragmentCreator";
     private static final Map<String, Fragment> BINDERS = new HashMap<>();
 
-    public static Fragment getFragment(Class<? extends UltimateFragment> ultimateFragment) {
-        final String simpleName = ultimateFragment.getSimpleName();
-        if (BINDERS.containsKey(simpleName)) {
-            return BINDERS.get(simpleName);
+    public static Fragment create(Class<? extends FragmentBuilder> builderClass) {
+        final String builderName = builderClass.getSimpleName();
+        if (BINDERS.containsKey(builderName)) {
+            return BINDERS.get(builderName);
         } else {
-            String fragmentName = ultimateFragment.getPackage().getName() + ".Generated" + simpleName + "Fragment";
+            String fragmentName = builderClass.getPackage().getName() + ".Generated" + builderName + "Fragment";
             Fragment currentFragment = null;
             try {
                 Class fragmentClass = Class.forName(fragmentName);
@@ -33,7 +33,7 @@ public class FragmentCreator {
                 Log.e(TAG, "IllegalAccessException ", e);
             }
             if (currentFragment != null) {
-                BINDERS.put(simpleName, currentFragment);
+                BINDERS.put(builderName, currentFragment);
             }
             return currentFragment;
         }

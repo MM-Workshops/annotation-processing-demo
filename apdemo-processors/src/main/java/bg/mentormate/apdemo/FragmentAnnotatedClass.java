@@ -10,17 +10,17 @@ import javax.lang.model.type.TypeMirror;
 /**
  * Created by tung.lam.nguyen on 04.07.2016
  */
-public class AnnotatedClass {
+public class FragmentAnnotatedClass {
     private final String name;
     private final TypeElement typeElement;
     private final List<VariableElement> views;
     private final List<ExecutableElement> methods;
     private final int layoutId;
 
-    public AnnotatedClass(TypeElement typeElement, List<VariableElement> views, List<ExecutableElement> methods) {
+    public FragmentAnnotatedClass(TypeElement typeElement, List<VariableElement> views, List<ExecutableElement> methods) {
         this.name = typeElement.getSimpleName().toString();
         this.typeElement = typeElement;
-        this.layoutId = typeElement.getAnnotation(FragmentBuilder.class).value();
+        this.layoutId = typeElement.getAnnotation(Screen.class).value();
         this.views = views;
         this.methods = methods;
     }

@@ -1,17 +1,21 @@
-package bg.mentormate.apdemo;
+package bg.mentormate.apdemo.screens;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.widget.Button;
 import android.widget.EditText;
 
-import bg.mentormate.fragmentcreator.UltimateFragment;
+import bg.mentormate.apdemo.Bind;
+import bg.mentormate.apdemo.Click;
+import bg.mentormate.apdemo.R;
+import bg.mentormate.apdemo.Screen;
+import bg.mentormate.fragmentcreator.FragmentBuilder;
 
 /**
  * Created by tung.lam.nguyen on 04.07.2016
  */
-@FragmentBuilder(R.layout.fragment_ultimate)
-public class UltimateScreen implements UltimateFragment {
+@Screen(R.layout.fragment_ultimate)
+public class UltimateScreen implements FragmentBuilder {
     public static final String TAG = "UltimateScreen";
 
     @Bind

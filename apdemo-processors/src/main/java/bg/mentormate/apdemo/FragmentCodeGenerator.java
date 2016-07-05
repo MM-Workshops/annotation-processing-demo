@@ -1,6 +1,5 @@
 package bg.mentormate.apdemo;
 
-import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -19,7 +18,7 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 /**
  * Created by tung.lam.nguyen on 04.07.2016
  */
-public class CodeGenerator {
+public class FragmentCodeGenerator {
     private static final ClassName FRAGMENT_CLASS = ClassName.get("android.support.v4.app", "Fragment");
     private static final ClassName LAYOUT_INFLATER_CLASS = ClassName.get("android.view", "LayoutInflater");
     private static final ClassName VIEW_GROUP_CLASS = ClassName.get("android.view", "ViewGroup");
@@ -34,7 +33,7 @@ public class CodeGenerator {
     private static final String INIT_VIEWS_METHOD = "initViews";
     private static final String INIT_LISTENERS_METHOD = "initListeners";
 
-    public static TypeSpec generateClass(AnnotatedClass annotatedClass) {
+    public static TypeSpec generateClass(FragmentAnnotatedClass annotatedClass) {
         List<VariableElement> views = annotatedClass.getViews();
         TypeSpec.Builder builder = classBuilder("Generated" + annotatedClass.getName() + "Fragment")
                 .addModifiers(PUBLIC, FINAL)
@@ -75,25 +74,23 @@ public class CodeGenerator {
                 .build();
     }
 
-    private static MethodSpec buildInitViewsMethod(AnnotatedClass annotatedClass) {
+    private static MethodSpec buildInitViewsMethod(FragmentAnnotatedClass annotatedClass) {
         final MethodSpec.Builder initViewsMethodBuilder = methodBuilder(INIT_VIEWS_METHOD)
                 .addModifiers(PRIVATE)
-                .addStatement("$L = new $L()", BUILDER_VARIABLE, annotatedClass.getName())
-                .addStatement("$L.init(getContext())", BUILDER_VARIABLE);
+                .addStatement("$L = new $L()", BUILDER_VARIABLE, annotatedClass.getName());
         for (VariableElement view : annotatedClass.getViews()) {
             String viewName = view.getSimpleName().toString();
             initViewsMethodBuilder
-                    .addStatement("$L = ($L) getActivity().findViewById(R.id.$L)", viewName, view.asType(), getViewIdByName(viewName))
+                    .addStatement("$L = ($L) getActivity().findViewById($T.id.$L)",
+                            viewName, view.asType(), ClassName.get(bg.mentormate.apdemo.utils.Utils.getMainPackageName(annotatedClass), "R"), bg.mentormate.apdemo.utils.Utils.getViewIdByName(viewName))
                     .addStatement("$L.$L = this.$L", BUILDER_VARIABLE, viewName, viewName);
         }
-        return initViewsMethodBuilder.build();
+        return initViewsMethodBuilder
+                .addStatement("$L.init(getContext())", BUILDER_VARIABLE)
+                .build();
     }
 
-    private static String getViewIdByName(String viewName) {
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, viewName);
-    }
-
-    private static MethodSpec buildInitListenersMethod(AnnotatedClass annotatedClass) {
+    private static MethodSpec buildInitListenersMethod(FragmentAnnotatedClass annotatedClass) {
         final MethodSpec.Builder builder = methodBuilder(INIT_LISTENERS_METHOD)
                 .addModifiers(PRIVATE);
         for (ExecutableElement method: annotatedClass.getMethods()) {
