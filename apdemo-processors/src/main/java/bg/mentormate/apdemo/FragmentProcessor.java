@@ -118,18 +118,15 @@ public class FragmentProcessor extends AbstractProcessor {
         List<VariableElement> views = new ArrayList<>();
         List<ExecutableElement> clickMethods = new ArrayList<>();
         List<ExecutableElement> lifeCycleMethods = new ArrayList<>();
+        TypeElement screenListener = null;
         for (Element enclosedElement : annotatedClass.getEnclosedElements()) {
-            if (!(enclosedElement instanceof VariableElement
-                    || enclosedElement instanceof ExecutableElement)) {
-                continue;
-            }
             if (enclosedElement instanceof VariableElement) {
                 VariableElement variableElement = (VariableElement) enclosedElement;
                 boolean isBindAnnotated = variableElement.getAnnotation(Bind.class) != null;
                 if (isBindAnnotated) {
                     views.add(variableElement);
                 }
-            } else {
+            } else if (enclosedElement instanceof ExecutableElement){
                 ExecutableElement executableElement = (ExecutableElement) enclosedElement;
                 boolean isClickAnnotated = executableElement.getAnnotation(Click.class) != null;
                 boolean isLifeCycleAnnotated = executableElement.getAnnotation(LifeCycle.class) != null;
@@ -138,9 +135,21 @@ public class FragmentProcessor extends AbstractProcessor {
                 } else if (isLifeCycleAnnotated){
                     lifeCycleMethods.add(executableElement);
                 }
+            } else if (enclosedElement instanceof TypeElement) {
+                TypeElement typeElement = (TypeElement) enclosedElement;
+                boolean isListenerAnnotated = typeElement.getAnnotation(Listener.class) != null;
+                if (isListenerAnnotated) {
+                    if (screenListener == null) {
+                        screenListener = typeElement;
+                    } else {
+                        String message = String.format("Classes annotated with %s must have only one interface annotated with @Listener",
+                                ANNOTATION);
+                        messager.printMessage(ERROR, message, typeElement);
+                    }
+                }
             }
         }
-        return new FragmentAnnotatedClass(annotatedClass, views, clickMethods, lifeCycleMethods);
+        return new FragmentAnnotatedClass(annotatedClass, views, clickMethods, lifeCycleMethods, screenListener);
     }
 
     private void generate(ArrayList<FragmentAnnotatedClass> annotatedClasses) throws bg.mentormate.apdemo.utils.NoPackageNameException, IOException {

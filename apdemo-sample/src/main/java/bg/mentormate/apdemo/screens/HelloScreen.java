@@ -6,8 +6,8 @@ import android.widget.TextView;
 
 import bg.mentormate.apdemo.Bind;
 import bg.mentormate.apdemo.LifeCycle;
-import bg.mentormate.apdemo.Screen;
 import bg.mentormate.apdemo.R;
+import bg.mentormate.apdemo.Screen;
 import bg.mentormate.apdemo.State;
 import bg.mentormate.fragmentcreator.FragmentScreen;
 
@@ -15,7 +15,7 @@ import bg.mentormate.fragmentcreator.FragmentScreen;
  * Created by tung.lam.nguyen on 05.07.2016
  */
 @Screen(R.layout.hello_fragment)
-public class HelloScreen implements FragmentScreen {
+public class HelloScreen implements FragmentScreen{
 
     public static final String TAG = "HelloScreen";
 
@@ -33,7 +33,7 @@ public class HelloScreen implements FragmentScreen {
     }
 
     @Override
-    public void init(Context context) {
-        txtWelcome.setText("Hello there");
+    public void init(Context context, Object listener) {
+
     }
 }
