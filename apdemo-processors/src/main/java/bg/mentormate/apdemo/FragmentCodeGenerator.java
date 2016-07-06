@@ -74,6 +74,10 @@ public class FragmentCodeGenerator {
             onAttachSpec
                     .beginControlFlow("if (activity instanceof $L.$L) ", annotatedClass.getName(), screenListenerName)
                     .addStatement("$L = ($L.$L) activity", SCREEN_LISTENER_VARIABLE, annotatedClass.getName(), screenListenerName)
+                    .endControlFlow()
+                    .beginControlFlow("else")
+                    .addStatement("throw new UnsupportedOperationException(String.format(\"%s must implement $L.$L\", activity.getClass().getSimpleName()))",
+                            annotatedClass.getName(), screenListenerName)
                     .endControlFlow();
         }
         return onAttachSpec.build();

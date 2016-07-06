@@ -25,7 +25,7 @@ public class UltimateScreen implements FragmentScreen <UltimateScreen.UltimateLi
 
     @Click(R.id.btn_hello)
     void onHelloButtonClicked() {
-
+        listener.goToHelloScreen();
     }
 
     @Override
